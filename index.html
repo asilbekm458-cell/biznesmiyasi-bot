@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Biznes Miyasi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#050B14;--bg2:#07101D;--s1:#0A1828;--s2:#0D2038;
+  --cyan:#00E5CC;--blue:#2563FF;--grn:#00E676;--red:#FF3B5C;
+  --ylw:#FFB300;--pur:#A855F7;
+  --w1:#F0F6FF;--w2:#A8BFDA;--w3:#5A7A9A;
+  --br:rgba(0,229,204,.1);--br2:rgba(0,229,204,.05);
+  --font:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--w1)}
+
+/* ═══ HEADER ═══ */
+.header{
+  position:sticky;top:0;z-index:100;
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(5,11,20,.95);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--br2);
+}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-icon{
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 0 12px rgba(0,229,204,.35);
+}
+.logo-text{font-size:16px;font-weight:700;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pts-badge{
+  display:flex;align-items:center;gap:4px;padding:4px 10px;
+  border-radius:20px;background:rgba(255,179,0,.12);
+  border:1px solid rgba(255,179,0,.25);font-size:11px;font-weight:800;color:var(--ylw);
+}
+
+/* ═══ CONTENT ═══ */
+.content{padding:16px;padding-bottom:100px}
+.section-title{
+  font-size:11px;font-weight:800;color:var(--w3);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.section-title::after{content:'';flex:1;height:1px;background:var(--br2)}
+.card{background:var(--s1);border:1px solid var(--br2);border-radius:14px;padding:14px;margin-bottom:10px}
+.card-sm{background:var(--s2);border:1px solid var(--br2);border-radius:10px;padding:10px}
+
+/* ═══ KPI GRID ═══ */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kpi{
+  background:var(--s1);border:1px solid var(--br2);border-radius:12px;padding:12px;
+  position:relative;overflow:hidden;
+}
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--blue));opacity:.5;
+}
+.kpi-label{font-size:10px;font-weight:700;color:var(--w3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-value{font-size:18px;font-weight:800}
+
+/* ═══ RISK METER ═══ */
+.risk-meter{margin:12px 0}
+.risk-bar{height:8px;background:var(--s2);border-radius:4px;overflow:hidden;margin:6px 0}
+.risk-fill{height:100%;border-radius:4px;transition:width 1s ease;width:0}
+.risk-label{display:flex;justify-content:space-between;font-size:11px;font-weight:700}
+
+/* ═══ ACTION GRID ═══ */
+.action-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.action-btn{
+  background:var(--s1);border:1.5px solid var(--br2);border-radius:12px;
+  padding:12px 6px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:4px;transition:all .15s;
+}
+.action-btn:active{transform:scale(.95);border-color:var(--cyan);background:rgba(0,229,204,.06)}
+.action-icon{font-size:26px}
+.action-label{font-size:11px;font-weight:700;color:var(--w1)}
+.action-sub{font-size:9px;color:var(--cyan)}
+
+/* ═══ CHART ═══ */
+.chart-container{margin:12px 0}
+.bar-item{margin-bottom:8px}
+.bar-header{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.bar-track{height:6px;background:var(--s2);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease;width:0}
+
+/* ═══ LEVEL ═══ */
+.level-card{
+  background:linear-gradient(135deg,var(--s1),var(--s2));
+  border:1px solid var(--br);border-radius:14px;padding:14px;margin-bottom:10px;
+}
+.level-bar{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin:8px 0}
+.level-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--blue));transition:width 1s ease}
+
+/* ═══ TABS NAV ═══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(7,16,29,.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--br2);padding:6px 0 20px;
+  display:flex;justify-content:space-around;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  cursor:pointer;padding:6px 10px;border-radius:10px;transition:all .15s;min-width:50px;
+}
+.nav-item.active{background:rgba(0,229,204,.08)}
+.nav-icon{font-size:20px}
+.nav-label{font-size:9px;font-weight:700;color:var(--w3);text-transform:uppercase;letter-spacing:.3px}
+.nav-item.active .nav-label{color:var(--cyan)}
+
+/* ═══ PAGES ═══ */
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ TOAST ═══ */
+.toast{
+  position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-100px);
+  background:var(--cyan);color:#050B14;padding:10px 20px;border-radius:10px;
+  font-size:13px;font-weight:700;z-index:999;transition:transform .3s ease;
+  box-shadow:0 4px 20px rgba(0,229,204,.4);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ═══ BUTTON ═══ */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:12px 16px;border:none;border-radius:12px;
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;width:100%;
+}
+.btn-primary{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#050B14;box-shadow:0 4px 16px rgba(0,229,204,.2)}
+.btn-primary:active{transform:scale(.97)}
+.btn-ghost{background:var(--s2);border:1.5px solid var(--br);color:var(--w1)}
+
+/* ═══ ACTIVITY LIST ═══ */
+.activity-item{
+  display:flex;align-items:center;gap:10px;padding:10px;
+  border-bottom:1px solid var(--br2);
+}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{font-size:18px;flex-shrink:0}
+.activity-text{flex:1;font-size:12px;font-weight:600}
+.activity-time{font-size:10px;color:var(--w3)}
+.activity-pts{
+  font-size:10px;font-weight:800;color:var(--ylw);
+  background:rgba(255,179,0,.12);border:1px solid rgba(255,179,0,.25);
+  padding:2px 8px;border-radius:10px;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <span class="logo-text">Biznes Miyasi</span>
+  </div>
+  <div class="pts-badge" id="headerPts">⭐ 0</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="level-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span id="lvlIcon" style="font-size:22px">⭐</span>
+          <div>
+            <div style="font-size:10px;color:var(--w3);font-weight:700">SEVIYA</div>
+            <div id="lvlName" style="font-size:14px;font-weight:800">Boshlang'ich</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div id="lvlPts" style="font-size:12px;font-weight:700;color:var(--cyan)">0 / 500</div>
+        </div>
+      </div>
+      <div class="level-bar"><div class="level-fill" id="lvlBar" style="width:0%"></div></div>
+      <div id="lvlNext" style="font-size:10px;color:var(--w3)">Keyingi: Tadbirkor (500 ball)</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">💰 Daromad</div>
+        <div class="kpi-value" id="kpiIncome" style="color:var(--grn)">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">⚡ Risk</div>
+        <div class="kpi-value" id="kpiRisk" style="color:var(--ylw)">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">📊 Tahlillar</div>
+        <div class="kpi-value" id="kpiAnalyses">0</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">✂️ Tejash</div>
+        <div class="kpi-value" id="kpiSavings" style="color:var(--cyan)">—</div>
+      </div>
+    </div>
+
+    <div class="section-title">⚡ Tez harakatlar</div>
+    <div class="action-grid">
+      <div class="action-btn" onclick="sendAction('new_analysis')">
+        <div class="action-icon">📊</div>
+        <div class="action-label">Tahlil</div>
+        <div class="action-sub">+50 ball</div>
+      </div>
+      <div class="action-btn" onclick="sendAction('ai_chat')">
+        <div class="action-icon">🧠</div>
+        <div class="action-label">AI Chat</div>
+        <div class="action-sub">Savol ber</div>
+      </div>
+      <div class="action-btn" onclick="sendAction('sms_parse')">
+        <div class="action-icon">📱</div>
+        <div class="action-label">SMS</div>
+        <div class="action-sub">Parse</div>
+      </div>
+      <div class="action-btn" onclick="sendAction('csv_import')">
+        <div class="action-icon">📁</div>
+        <div class="action-label">Import</div>
+        <div class="action-sub">CSV/1C</div>
+      </div>
+      <div class="action-btn" onclick="sendAction('pdf_report')">
+        <div class="action-icon">📄</div>
+        <div class="action-label">PDF</div>
+        <div class="action-sub">Hisobot</div>
+      </div>
+      <div class="action-btn" onclick="sendAction('premium')">
+        <div class="action-icon">👑</div>
+        <div class="action-label">Premium</div>
+        <div class="action-sub">Pro</div>
+      </div>
+    </div>
+
+    <div class="section-title">📈 Oxirgi faoliyat</div>
+    <div class="card" id="activityList">
+      <div style="text-align:center;padding:16px;color:var(--w3);font-size:13px">
+        Hali faoliyat yo'q. Birinchi tahlilni boshlang! 🚀
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS PAGE -->
+  <div class="page" id="page-analysis">
+    <div class="section-title">📊 Oxirgi Tahlil</div>
+    <div class="card" id="analysisCard">
+      <div style="text-align:center;padding:20px;color:var(--w3)">
+        <div style="font-size:40px;margin-bottom:8px">📊</div>
+        <div style="font-size:14px;font-weight:700">Hali tahlil qilinmagan</div>
+        <div style="font-size:12px;margin-top:4px">Bot orqali /tahlil buyrug'ini yuboring</div>
+        <button class="btn btn-primary" style="margin-top:12px" onclick="sendAction('new_analysis')">📊 Tahlil boshlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATING PAGE -->
+  <div class="page" id="page-rating">
+    <div class="section-title">🏆 Reyting</div>
+    <div class="card" id="ratingList">
+      <div style="text-align:center;padding:20px;color:var(--w3)">
+        <div style="font-size:40px;margin-bottom:8px">🏆</div>
+        <div style="font-size:14px;font-weight:700">Reyting yuklanmoqda...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS PAGE -->
+  <div class="page" id="page-tasks">
+    <div class="section-title">✅ Vazifalar</div>
+    <div class="card" id="tasksList">
+      <div style="text-align:center;padding:20px;color:var(--w3)">
+        Bot orqali /vazifalar buyrug'ini yuboring
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page" id="page-profile">
+    <div class="section-title">👤 Profil</div>
+    <div class="card" id="profileCard">
+      <div style="text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--pur),var(--blue));display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 10px;border:2px solid rgba(168,85,247,.4)">👤</div>
+        <div id="profName" style="font-size:16px;font-weight:800">Yuklanmoqda...</div>
+        <div id="profLevel" style="font-size:12px;color:var(--cyan);margin-top:4px">⭐ Boshlang'ich</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+        <div class="card-sm" style="text-align:center">
+          <div id="profPts" style="font-size:16px;font-weight:800">0</div>
+          <div style="font-size:9px;color:var(--w3);font-weight:700;text-transform:uppercase">Ball</div>
+        </div>
+        <div class="card-sm" style="text-align:center">
+          <div id="profAnalyses" style="font-size:16px;font-weight:800">0</div>
+          <div style="font-size:9px;color:var(--w3);font-weight:700;text-transform:uppercase">Tahlil</div>
+        </div>
+        <div class="card-sm" style="text-align:center">
+          <div id="profStreak" style="font-size:16px;font-weight:800">1</div>
+          <div style="font-size:9px;color:var(--w3);font-weight:700;text-transform:uppercase">Streak</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="goPage('dashboard')">
+    <div class="nav-icon">🏠</div><div class="nav-label">Bosh</div>
+  </div>
+  <div class="nav-item" onclick="goPage('analysis')">
+    <div class="nav-icon">📊</div><div class="nav-label">Tahlil</div>
+  </div>
+  <div class="nav-item" onclick="goPage('rating')">
+    <div class="nav-icon">🏆</div><div class="nav-label">Reyting</div>
+  </div>
+  <div class="nav-item" onclick="goPage('tasks')">
+    <div class="nav-icon">✅</div><div class="nav-label">Vazifalar</div>
+  </div>
+  <div class="nav-item" onclick="goPage('profile')">
+    <div class="nav-icon">👤</div><div class="nav-label">Profil</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══ Telegram WebApp API ═══
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#050B14');
+  tg.setBackgroundColor('#050B14');
+}
+
+// ═══ STATE ═══
+let state = {
+  points: 0,
+  level: { name: "Boshlang'ich", icon: "⭐", min: 0, max: 500 },
+  analysisCount: 0,
+  lastAnalysis: null,
+  activities: [],
+};
+
+const LEVELS = [
+  { id: 0, name: "Boshlang'ich", icon: "⭐", min: 0, max: 500 },
+  { id: 1, name: "Tadbirkor", icon: "🌱", min: 500, max: 1500 },
+  { id: 2, name: "Biznesmen", icon: "💼", min: 1500, max: 3000 },
+  { id: 3, name: "Moliyachi", icon: "📊", min: 3000, max: 6000 },
+  { id: 4, name: "Ekspert", icon: "🔥", min: 6000, max: 12000 },
+  { id: 5, name: "Legend", icon: "👑", min: 12000, max: 99999 },
+];
+
+// ═══ NAVIGATION ═══
+function goPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event.currentTarget?.classList.add('active');
+}
+
+// ═══ SEND ACTION TO BOT ═══
+function sendAction(action) {
+  if (tg) {
+    tg.sendData(JSON.stringify({ action: action }));
+  } else {
+    toast("Bot orqali foydalaning!");
+  }
+}
+
+// ═══ TOAST ═══
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══ FORMAT MONEY ═══
+function fmtM(n) {
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + ' mlrd';
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+  return n.toString();
+}
+
+// ═══ UPDATE UI ═══
+function updateUI() {
+  // Header points
+  document.getElementById('headerPts').textContent = '⭐ ' + state.points;
+  
+  // Level
+  let lvl = LEVELS[0];
+  for (let i = LEVELS.length - 1; i >= 0; i--) {
+    if (state.points >= LEVELS[i].min) { lvl = LEVELS[i]; break; }
+  }
+  state.level = lvl;
+  const nextLvl = LEVELS[Math.min(lvl.id + 1, LEVELS.length - 1)];
+  const progress = Math.min(100, (state.points - lvl.min) / (lvl.max - lvl.min) * 100);
+  
+  document.getElementById('lvlIcon').textContent = lvl.icon;
+  document.getElementById('lvlName').textContent = lvl.name;
+  document.getElementById('lvlPts').textContent = state.points + ' / ' + lvl.max;
+  document.getElementById('lvlBar').style.width = progress + '%';
+  document.getElementById('lvlNext').textContent = 
+    lvl.id < LEVELS.length - 1 
+      ? 'Keyingi: ' + nextLvl.name + ' (' + nextLvl.min + ' ball)' 
+      : '🏆 Maksimal seviya!';
+  
+  // KPIs
+  document.getElementById('kpiAnalyses').textContent = state.analysisCount;
+  
+  if (state.lastAnalysis) {
+    const a = state.lastAnalysis;
+    document.getElementById('kpiIncome').textContent = fmtM(a.income || 0);
+    document.getElementById('kpiRisk').textContent = (a.risk_score || '?') + '/100';
+    document.getElementById('kpiSavings').textContent = '+' + fmtM(Math.round((a.expense || 0) * 0.27 * 0.62));
+  }
+  
+  // Profile
+  const user = tg?.initDataUnsafe?.user;
+  if (user) {
+    document.getElementById('profName').textContent = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+  }
+  document.getElementById('profLevel').textContent = lvl.icon + ' ' + lvl.name;
+  document.getElementById('profPts').textContent = state.points;
+  document.getElementById('profAnalyses').textContent = state.analysisCount;
+}
+
+// ═══ INIT ═══
+document.addEventListener('DOMContentLoaded', () => {
+  updateUI();
+  
+  // Telegram theme
+  if (tg?.colorScheme === 'light') {
+    document.documentElement.style.setProperty('--bg', '#F0F4F8');
+    document.documentElement.style.setProperty('--bg2', '#E8EEF4');
+    document.documentElement.style.setProperty('--s1', '#FFFFFF');
+    document.documentElement.style.setProperty('--s2', '#EDF2F7');
+    document.documentElement.style.setProperty('--w1', '#0D1B2A');
+    document.documentElement.style.setProperty('--w2', '#2D4A6A');
+  }
+});
+</script>
+</body>
+</html>
